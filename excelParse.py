@@ -6,7 +6,14 @@ import sys
 DATA_FILE = 'attendees.log'
 
 def append_from_column(lst, ws, index, length):
-    [ lst.append( ws[ index+str(i) ].value ) for i in range(length) ]
+    # for row in ws.values:
+    #     for value in row:
+    #         print(value)
+    for i in range(1, length):
+        lst.append(ws.cell(row=i, column=index).value)
+        #print(lst) --debugging
+    #print( ws.cell(row=i, column=).value )
+    #[ lst.append( ws[index+str(i)].value ) for i in range(length) ]
 
 def parse_data(config):
     with open(config) as f:
@@ -14,21 +21,25 @@ def parse_data(config):
         data = json.loads(f.read())
     return data
 
-def create_dictionary(names, surnames, occupations, universities):
+def create_dictionary(names, surnames, occupations, universities, numOfRows):
     print ("[+] Writing everything to a list of dictionaries")
     full = []
-    for i in range(numOfRows):  
+    for i in range(numOfRows-1):
+        #print(names) 
+        #print(i)
+        #for debugging
+        #print("Name: ", names[i],"Surname: ", surnames[i],"Occupation: ", occupations[i], "University: ", universities[i])
         dictionary = {
-            "Name": names[i].encode('utf-8'),
-            "Surname": surnames[i].encode('utf-8'),
-            "Occupation": occupations[i].encode('utf-8'),
-            "University": universities[i].encode('utf-8')
+            "Name": names[i],
+            "Surname": surnames[i],
+            "Occupation": occupations[i],
+            "University": universities[i]
             }
         # print '[!] DEBUG'+str(names[i].decode("utf-8"))
         full.append(dictionary)
     return full
 
-def parse_excelfile(ws, data_format, numOfRows)
+def parse_excelfile(ws, data_format, numOfRows):
     names = []
     surnames = []
     occupations = []
@@ -36,16 +47,18 @@ def parse_excelfile(ws, data_format, numOfRows)
 
     # Loop through whole excel file
     print ("[+] Reading worksheet, appending Names/Surnames/Occupations")
-    for column in range(numOfColumns):
+    numOfColumns=ws.max_column + 1
+    for column in range(1,numOfColumns):
         column_letter = get_column_letter(column)  # openpyxl function
+        #print(column_letter) --for debugging
         if data_format[column_letter].lower() == 'name':
-            append_from_column(names, ws, column_letter, numOfRows)
+            append_from_column(names, ws, column, numOfRows)
         elif data_format[column_letter].lower() == 'surname':  
-            append_from_column(surnames, ws, column_letter, numOfRows)
+            append_from_column(surnames, ws, column, numOfRows)
         elif data_format[column_letter].lower() == 'occupation':  
-            append_from_column(occupations, ws, column_letter, numOfRows)
+            append_from_column(occupations, ws, column, numOfRows)
         elif data_format[column_letter].lower() == 'university':
-            append_from_column(universities, ws, column_letter, numOfRows)
+            append_from_column(universities, ws, column, numOfRows)
         else:
             print "ERROR!"
             sys.exit(-1)
@@ -59,7 +72,7 @@ def excel_to_dict(file_url, config_file):
 
     data_format = parse_data(config_file)
     names, surnames, occupations, universities = parse_excelfile(ws, data_format, numOfRows)
-    dic = createDictionary(names, surnamesm occupations, universities, numOfRows):
+    dic = create_dictionary(names, surnames, occupations, universities, numOfRows)
 
     print ("[+] Writing dictionary to file.")
     with open(DATA_FILE, 'w') as f:

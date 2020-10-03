@@ -15,19 +15,16 @@ from os import mkdir
 Image.init()
 Image.SAVE.keys()
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+colour1 = (255, 255, 255)
+colour2 = (40, 40, 40)
 
-MAIN_FONT = "C:/Windows/Fonts/GOTHICB.ttf"
-MAIN_FONT_SIZE = 85
-OCCUPATIONS_FONT = "C:/Windows/Fonts/Cocomat Light-trial.ttf"
-OCCUPATIONS_FONT_SIZE = 0.75 * float(MAIN_FONT_SIZE)
-UNIVERSITIES_FONT =  "C:/Windows/Fonts/GOTHICI.TTF"
-UNIVERSITIES_FONT_SIZE = OCCUPATIONS_FONT_SIZE
+MAIN_FONT = "/home/chetan/Downloads/Fonts/product-sans/Product Sans Bold.ttf"
+OCCUPATIONS_FONT = "/home/chetan/Downloads/Fonts/product-sans/Product Sans Regular.ttf"
+#OCCUPATIONS_FONT_SIZE = 0.75 * float(MAIN_FONT_SIZE)
+UNIVERSITIES_FONT =  OCCUPATIONS_FONT
 
-EXCESS_FONT_SIZE = 65
 
-def initialize_occupation_directories(occupations, size):
+def initialize_occupation_directories(occupations, size, group):
     read = False
     for i in range(size):
         if not read:
@@ -43,71 +40,87 @@ def initialize_occupation_directories(occupations, size):
                 if not os.path.exists("Occupations"):
                     mkdir("Occupations")
 
-def draw_data_to_img(img, name, surname, occupation, university):
+def draw_data_to_img(img, name, surname, occupation, university, group, img_width, img_height):
         # Values and offsets modified through trial and error
 
         ######################### HACKS TO FIT TEXT PROPERLY TO TEMPLATE  ####################################
 
-        # pad for proper styling on template
-        name_xpad = 63
-        name_ypad = 750
+        #Font Sizes
+        default_size=45
+        if(((len(name)+len(surname))/2)<=10):
+            MAIN_FONT_SIZE=default_size
+        else:
+            MAIN_FONT_SIZE = default_size*10/((len(name)+len(surname))/2)
+        if(len(occupation)<=20):
+            OCCUPATIONS_FONT_SIZE= 0.75 * default_size
+        else:
+            OCCUPATIONS_FONT_SIZE = (0.75 * 20 * default_size)/len(occupation)
+        if(len(university)<=30):
+            UNIVERSITIES_FONT_SIZE = 0.65 * default_size
+        else:
+            UNIVERSITIES_FONT_SIZE = (0.65 * 30 * default_size)/len(occupation)
+        EXCESS_FONT_SIZE = 0.6*MAIN_FONT_SIZE
 
-        surname_xpad = name_xpad
-        surname_ypad = name_ypad + 85
+        # pad for proper styling on template
+        name_xpad = img_width/5
+        name_ypad = img_height/2
+
+        surname_xpad = name_xpad + len(name)*(MAIN_FONT_SIZE/3) + MAIN_FONT_SIZE * 1.5
+        surname_ypad = name_ypad 
 
         occupation_xpad = name_xpad
-        occupation_ypad = 1010
+        occupation_ypad = name_ypad + MAIN_FONT_SIZE*1.2
 
         university_xpad = name_xpad
-        university_ypad = 1110
+        university_ypad = name_ypad + MAIN_FONT_SIZE*1.2*2
         
         ############# Adjust sizes so that text doesnt spill from black box
         name_font = ImageFont.truetype(MAIN_FONT, MAIN_FONT_SIZE)
-        if len(name) > 10:
-            name_font = ImageFont.truetype(MAIN_FONT, EXCESS_FONT_SIZE)
-            name_ypad += 10
+        # if len(name) > 10:
+        #     name_font = ImageFont.truetype(MAIN_FONT, int(EXCESS_FONT_SIZE))
+        #     name_ypad += 10
 
         surname_font = ImageFont.truetype(MAIN_FONT, MAIN_FONT_SIZE)
-        if len(surname) > 10:
-            surname_font = ImageFont.truetype(MAIN_FONT, EXCESS_FONT_SIZE)
-            surname_ypad += 20
+        # if len(surname) > 10:
+        #     surname_font = ImageFont.truetype(MAIN_FONT, int(EXCESS_FONT_SIZE))
+        #     surname_ypad += 20
 
         occupation_font = ImageFont.truetype(OCCUPATIONS_FONT,int(OCCUPATIONS_FONT_SIZE))
-        if len(occupation) > 25:
-            OCCUPATIONS_FONT_SIZE = 0.63 * float(OCCUPATIONS_FONT_SIZE)
-            occupation_xpad = 55
-            occupation_ypad += 5
-        elif len(occupation) > 20:
-            OCCUPATIONS_FONT_SIZE = 0.76 * float(OCCUPATIONS_FONT_SIZE)
+        # if len(occupation) > 25:
+        #     OCCUPATIONS_FONT_SIZE = 0.63 * float(OCCUPATIONS_FONT_SIZE)
+        #     occupation_xpad = 55
+        #     occupation_ypad += 5
+        # elif len(occupation) > 20:
+        #     OCCUPATIONS_FONT_SIZE = 0.76 * float(OCCUPATIONS_FONT_SIZE)
 
         if university!='0':
-            university_nl = university
-            uni_words = university.split()
-            if university == "THE AMERICAN COLLEGE OF THESSALONIKI":
-                university_nl = "THE AMERICAN\nCOLLEGE OF\nTHESSALONIKI"
-            elif len(university)>50:
-                university_nl = u"ΕΘΝΙΚΟ ΚΑΙ\nΚΑΠΟΔΙΣΤΡΙΑΚΟ ΠΑΝΕΠΙΣΤΗΜΙΟ\nΑΘΗΝΩΝ/ΑΡΙΣΤΟΤΕΛΕΙΟ\nΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΟΝΙΚΗΣ"
-                size_uni_font = 0.70 * float(size_uni_font)
-            elif len(university) > 40:
-                university_nl = uni_words[0],uni_words[1]+"\n"+uni_words[2],uni_words[3]+"\n"+uni_words[4]
-                size_uni_font = 0.75 * float(size_uni_font)
-            elif len(university)>10:
-                university_nl = university[:10]+university[10:].replace(" ","\n")
-            if not group and len(university)<12:
-                size_uni_font = 1.75 * float(size_uni_font)
-            uni_font = ImageFont.truetype(UNIVERSITIES_FONT, int(size_uni_font))
+            # university_nl = university
+            # uni_words = university.split()
+            # if university == "THE AMERICAN COLLEGE OF THESSALONIKI":
+            #     university_nl = "THE AMERICAN\nCOLLEGE OF\nTHESSALONIKI"
+            # elif len(university)>50:
+            #     university_nl = u"ΕΘΝΙΚΟ ΚΑΙ\nΚΑΠΟΔΙΣΤΡΙΑΚΟ ΠΑΝΕΠΙΣΤΗΜΙΟ\nΑΘΗΝΩΝ/ΑΡΙΣΤΟΤΕΛΕΙΟ\nΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΟΝΙΚΗΣ"
+            #     size_uni_font = 0.70 * float(UNIVERSITIES_FONT_SIZE)
+            # elif len(university) > 40:
+            #     university_nl = uni_words[0],uni_words[1]+"\n"+uni_words[2],uni_words[3]+"\n"+uni_words[4]
+            #     size_uni_font = 0.75 * float(UNIVERSITIES_FONT_SIZE)
+            # elif len(university)>10:
+            #     university_nl = university[:10]+university[10:].replace(" ","\n")
+            # if not group and len(university)<12:
+            #     size_uni_font = 1.75 * float(UNIVERSITIES_FONT_SIZE)
+            uni_font = ImageFont.truetype(UNIVERSITIES_FONT, int(UNIVERSITIES_FONT_SIZE))
 
         ######################### END OF HACKS ####################################
 
         draw = ImageDraw.Draw(img)
-        draw.text((name_xpad, name_ypad), name, white, name_font)
-        draw.text((surname_xpad, surname_ypad), surname, white, surname_font)
-        draw.text((x_pad, occupation_y_pad), occupation, black, OCCUPATIONS_FONT
-        draw.text((x_pad+1, occupation_y_pad), occupation, black, OCCUPATIONS_FONT) # Simulate bold with +1 offset
+        draw.text((name_xpad, name_ypad), name, colour1, name_font)
+        draw.text((surname_xpad, surname_ypad), surname, colour1, surname_font)
+        draw.text((occupation_xpad, occupation_ypad), occupation, colour2, occupation_font)
+        draw.text((occupation_xpad+1, occupation_ypad), occupation, colour2, occupation_font) # Simulate bold with +1 offset
         if university != '0':
-            draw.text((x_pad, uni_y_pad), university_nl, black, uni_font)
+            draw.text((university_xpad, university_ypad), university, colour2, uni_font)
 
-def save_image(img, fname, occupation, occupations, group, action)
+def save_image(img, fname, occupation, occupations, group, action):
         # Save each file to corresponding directory
         scriptdir = os.getcwd()
         if group:
@@ -148,7 +161,7 @@ def dictionary_to_img(image_dir, data_file, action, group):
         if dictionary[i]['Occupation'] not in occupations:
             occupations.append(dictionary[i]['Occupation'])
 
-    initialize_occupation_directories(occupations, len(dictionary))
+    initialize_occupation_directories(occupations, len(dictionary), group)
 
     # Is this needed?
     #for i in range(0,len(occupations)):
@@ -161,7 +174,10 @@ def dictionary_to_img(image_dir, data_file, action, group):
         university = dictionary[i]['University'].decode('UTF-8')
 
         img = Image.open(image_dir)
-        draw_data_to_img(img, name, surname, occupation, university)
+        print(img.getbbox()[1])
+        img_width=img.getbbox()[2]
+        img_height=img.getbbox()[3]
+        draw_data_to_img(img, name, surname, occupation, university, group, img_width, img_height)
         fileName = dictionary[i]['Name'].decode('UTF-8') + "_" + dictionary[i]['Surname'].decode('UTF-8') + ".jpg"
         save_image(img, fileName, occupation, occupations, group, action)
     print("[!] Done. Exiting.")

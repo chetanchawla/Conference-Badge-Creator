@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser(description="""
 group = parser.add_mutually_exclusive_group()
 parser.add_argument("-e", "--exceldir", type=str, help='Absolute path to the excel file.')
 parser.add_argument("-t", "--template", type=str, help='Absolute path to the template image file.')
+parser.add_argument("-c", "--configdir", type=str, help='Absolute path to the config.json file.')
 group.add_argument("-o", "--overwrite", help='Use when you want to overwrite all files if they exist',
                    action="store_true")
 group.add_argument("-s", "--skip", help='Use when you don\'t want to overwrite existing files', action="store_true")
@@ -34,6 +35,7 @@ option = parser.parse_args()
 def badge_creator():
     excel_dir = option.exceldir
     file_dir = option.template
+    config_dir=option.configdir
     action = 0
     if option.skip:
         action = 2
@@ -44,12 +46,13 @@ def badge_creator():
     else:
         print "Normal Mode: ON"
 
-    folders = raw_input("Group based on occupation > ")
+    folders = raw_input("Group based on occupation (y or n)> ")
     while folders.lower() not in ['y','n']:
         folders = raw_input("Try again\nGroup? > ")
     folders = folders.lower() == 'y'
 
-    excelParse.excel_to_dict(excel_dir)
+    excelParse.excel_to_dict(excel_dir, config_dir)
+    print(folders)
     dictTextToImage.dictionary_to_img(file_dir, DATA_FILE, action, folders)
 
     combine = raw_input("Do you want to combine all your files in a grid?\nCombine? [N] > ")
