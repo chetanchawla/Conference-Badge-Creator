@@ -20,7 +20,6 @@ colour2 = (40, 40, 40)
 
 MAIN_FONT = "/home/chetan/Downloads/Fonts/product-sans/Product Sans Bold.ttf"
 OCCUPATIONS_FONT = "/home/chetan/Downloads/Fonts/product-sans/Product Sans Regular.ttf"
-#OCCUPATIONS_FONT_SIZE = 0.75 * float(MAIN_FONT_SIZE)
 UNIVERSITIES_FONT =  OCCUPATIONS_FONT
 
 
@@ -177,7 +176,12 @@ def dictionary_to_img(image_dir, data_file, action, group):
         print(img.getbbox()[1])
         img_width=img.getbbox()[2]
         img_height=img.getbbox()[3]
+        
         draw_data_to_img(img, name, surname, occupation, university, group, img_width, img_height)
+        #To add another image as overlay
+        # img2=Image.open("/home/chetan/Desktop/over.jpeg")
+        # img2_resize = img2.resize((220,220))
+        # img.paste(img2_resize, (img_width-1000, img_height/2))
         fileName = dictionary[i]['Name'].decode('UTF-8') + "_" + dictionary[i]['Surname'].decode('UTF-8') + ".jpg"
         save_image(img, fileName, occupation, occupations, group, action)
     print("[!] Done. Exiting.")
